@@ -9,10 +9,10 @@ const { post, get } = axios.create({
 
 export const createGame = ({ width, height, name, difficulty = 0 }) =>
   post("maze", {
-    "maze-width": width,
-    "maze-height": height,
+    "maze-width": parseInt(width, 10),
+    "maze-height": parseInt(height, 10),
     "maze-player-name": name,
-    difficulty
+    difficulty: parseInt(difficulty, 10)
   });
 
 export const getGame = id => get(`maze/${id}`);

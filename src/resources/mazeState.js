@@ -10,15 +10,17 @@ export const { actions, reducer } = createResource("mazeState", {
   data: []
 });
 
-export const getMaze = payload => async (dispatch, getState) => {
-  dispatch(actions.masestateRequest());
+export const getMaze = () => async (dispatch, getState) => {
+  dispatch(actions.mazestateRequest());
   try {
     const { data } = await getGame(getState().maze.data.maze_id);
-    dispatch(actions.masestateSuccess({ ...data }));
+    dispatch(
+      actions.mazestateSuccess({ ...data, endPoint: data["end-point"] })
+    );
   } catch (error) {
     if (error.response) {
       dispatch(
-        actions.masestate({
+        actions.mazestateFail({
           error: error.response.data
         })
       );
