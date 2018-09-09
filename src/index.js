@@ -9,7 +9,6 @@ import { PersistGate } from "redux-persist/integration/react";
 
 import { configureStore } from "./configureStore";
 import { persistStore } from "redux-persist";
-import { actions, reducer } from "./resources/maze";
 
 const store = configureStore();
 const persistor = persistStore(store);

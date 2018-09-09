@@ -3,7 +3,7 @@ import { createActions, handleActions } from "redux-actions";
 export default (actionName, initialState) => {
   const ACTION_NAME = actionName.toUpperCase();
   const actions = createActions({
-    [`${ACTION_NAME}_REQUEST`]: data => ({ data }),
+    [`${ACTION_NAME}_REQUEST`]: () => null,
     [`${ACTION_NAME}_SUCCESS`]: data => ({ data }),
     [`${ACTION_NAME}_FAIL`]: error => ({ error })
   });
