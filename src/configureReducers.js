@@ -1,5 +1,7 @@
 import { combineReducers } from "redux";
+import { reducer as maze } from "./resources/maze";
+import { reducer as mazeState } from "./resources/mazeState";
+import { reducer as move } from "./resources/move";
 
-const app = (state = {}, action) => state;
-
-export const configureReducers = () => combineReducers({ app });
+export const configureReducers = () =>
+  combineReducers({ maze, mazeState, move });
