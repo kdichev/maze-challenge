@@ -1,86 +1,20 @@
 import React, { Component } from "react";
 import logo from "./logo.svg";
-import "./App.css";
 import Grid from "./components/Grid";
 import Row from "./components/Row";
 import Node from "./components/Node";
 import Controls from "./components/Controls";
-import Button from "./components/Button";
-import TextField from "./components/TextField";
-import { withStateHandlers } from "recompose";
+import MazeForm from "./components/MazeForm";
 import { connect } from "react-redux";
-import { createMaze } from "./resources/maze";
-import { getMaze } from "./resources/mazeState";
-import { movePony } from "./resources/move";
-import { splitEvery } from "ramda";
+import { splitEvery, compose } from "ramda";
+import withCreateMaze from "./HOC/withCreateMaze";
+import withMoveDirections from "./HOC/withMoveDirections";
+import withFormState from "./HOC/withFormState";
 
-const gridData = [
-  [["west", "north", "pony"], ["west", "north"], ["north"]],
-  [["west"], [], ["north"]],
-  [["west"], ["north"], ["north", "exit"]]
-];
-
-const FormWithState = withStateHandlers(
-  props => ({ values: { width: 15, height: 15, difficulty: 0 } }),
-  {
-    onChange: (state, props) => e => ({
-      ...state,
-      values: { ...state.values, [e.target.name]: e.target.value }
-    })
-  }
-)(({ onChange, values, onSubmit }) => (
-  <form
-    onSubmit={e => {
-      e.preventDefault();
-      onSubmit(values);
-    }}
-  >
-    <TextField
-      name="name"
-      placeholder="Pony name"
-      type="text"
-      required
-      onChange={onChange}
-    />
-    <TextField
-      name="width"
-      type="number"
-      min={15}
-      max={25}
-      defaultValue={15}
-      required
-      onChange={onChange}
-    />
-    <TextField
-      name="height"
-      type="number"
-      min={15}
-      max={25}
-      defaultValue={15}
-      required
-      onChange={onChange}
-    />
-    <TextField
-      name="difficulty"
-      type="number"
-      min={0}
-      max={10}
-      defaultValue={0}
-      onChange={onChange}
-    />
-    <Button type="submit">CreateMaze</Button>
-  </form>
-));
-
-const EnchancedForm = connect(
-  state => ({}),
-  dispatch => ({
-    onSubmit: async payload => {
-      await dispatch(createMaze(payload));
-      dispatch(getMaze());
-    }
-  })
-)(FormWithState);
+const FormWithState = compose(
+  withCreateMaze,
+  withFormState
+)(MazeForm);
 
 const EnchancedApp = connect(state => ({
   data: splitEvery(
@@ -97,27 +31,7 @@ const EnchancedApp = connect(state => ({
   )
 }));
 
-const EnchancedControls = connect(
-  state => ({}),
-  dispatch => ({
-    onWest: async () => {
-      await dispatch(movePony("west"));
-      dispatch(getMaze());
-    },
-    onEast: async () => {
-      await dispatch(movePony("east"));
-      dispatch(getMaze());
-    },
-    onNorth: async () => {
-      await dispatch(movePony("north"));
-      dispatch(getMaze());
-    },
-    onSouth: async () => {
-      await dispatch(movePony("south"));
-      dispatch(getMaze());
-    }
-  })
-)(Controls);
+const EnchancedControls = withMoveDirections(Controls);
 
 class App extends Component {
   render() {
@@ -130,13 +44,13 @@ class App extends Component {
         <p className="App-intro">
           To get started, edit <code>src/App.js</code> and save to reload.
         </p>
-        <EnchancedForm />
+        <FormWithState />
 
         <Grid>
           {this.props.data.map((row, y) => (
-            <Row>
+            <Row key={y}>
               {row.map((node, x) => (
-                <Node node={node}>{`${y},${x}`}</Node>
+                <Node node={node} key={x}>{`${y},${x}`}</Node>
               ))}
             </Row>
           ))}
