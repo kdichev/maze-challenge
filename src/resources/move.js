@@ -6,7 +6,7 @@ export const { actions, reducer } = createResource("nextMove", {
   "state-result": null
 });
 
-export const movePony = direction => async dispatch => {
+export const movePony = direction => async (dispatch, getState) => {
   dispatch(actions.nextmoveRequest());
   try {
     const { data } = await movePlayer(getState().maze.data.maze_id, direction);
