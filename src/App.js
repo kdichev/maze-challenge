@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import logo from "./logo.svg";
 import Grid from "./components/Grid";
 import Row from "./components/Row";
@@ -10,55 +10,69 @@ import { splitEvery, compose } from "ramda";
 import withCreateMaze from "./HOC/withCreateMaze";
 import withMoveDirections from "./HOC/withMoveDirections";
 import withFormState from "./HOC/withFormState";
+import { onlyUpdateForKeys } from "recompose";
 
 const FormWithState = compose(
   withCreateMaze,
   withFormState
 )(MazeForm);
 
-const EnchancedApp = connect(state => ({
-  data: splitEvery(
-    state.mazeState.data.size[0],
-    state.mazeState.data.data
-      .map((n, i) => (i === state.mazeState.data.pony[0] ? [...n, "pony"] : n))
-      .map(
-        (n, i) =>
-          i === state.mazeState.data.domokun[0] ? [...n, "domokun"] : n
-      )
-      .map(
-        (n, i) => (i === state.mazeState.data.endPoint[0] ? [...n, "exit"] : n)
-      )
-  )
-}));
-
 const EnchancedControls = withMoveDirections(Controls);
 
-class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-        <FormWithState />
+const Cell = onlyUpdateForKeys(["isPony", "isDomokun"])(Node);
 
-        <Grid>
-          {this.props.data.map((row, y) => (
-            <Row key={y}>
-              {row.map((node, x) => (
-                <Node node={node} key={x}>{`${y},${x}`}</Node>
-              ))}
-            </Row>
+const MazeGame = props => (
+  <React.Fragment>
+    <FormWithState />
+    <Grid>
+      {props.data.map((row, y) => (
+        <Row key={y}>
+          {row.map((node, x) => (
+            <Cell {...node} key={x}>{`${y},${x}`}</Cell>
           ))}
-        </Grid>
-        <EnchancedControls />
-      </div>
-    );
-  }
-}
+        </Row>
+      ))}
+    </Grid>
+    <EnchancedControls />
+  </React.Fragment>
+);
 
-export default EnchancedApp(App);
+const Game = connect(
+  ({
+    mazeState: {
+      data: { size, data, pony, domokun, endPoint }
+    }
+  }) => ({
+    data: compose(
+      splitEvery(size[0]),
+      arr =>
+        arr.map((node, i, arr) => ({
+          walls: node,
+          directions: {
+            top: !node.includes("north"),
+            left: !node.includes("west"),
+            right: arr[i + 1] && !arr[i + 1].includes("west"),
+            bottom: arr[i + 15] && !arr[i + 15].includes("north")
+          },
+          isPony: i === pony[0],
+          isDomokun: i === domokun[0],
+          isEndPoint: i === endPoint[0]
+        }))
+    )(data)
+  })
+)(MazeGame);
+
+const App = () => (
+  <div className="App">
+    <header className="App-header">
+      <img src={logo} className="App-logo" alt="logo" />
+      <h1 className="App-title">Welcome to React</h1>
+    </header>
+    <p className="App-intro">
+      To get started, edit <code>src/App.js</code> and save to reload.
+    </p>
+    <Game />
+  </div>
+);
+
+export default App;
