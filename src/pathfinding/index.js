@@ -10,7 +10,7 @@ export const findNodePosition = (arr, character) => {
     return false;
   });
 
-  return position;
+  return { position, ...arr[position[0]][position[1]] };
 };
 
 // const result = findNodePosition(this.props.data, "isPony");
