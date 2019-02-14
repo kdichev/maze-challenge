@@ -6,7 +6,7 @@
     "axios": "^0.18.0",
     "ramda": "^0.25.0",
     "react": "^16.8.2",
-    "react-dom": "^16.5.0",
+    "react-dom": "^16.8.2",
     "react-redux": "^5.0.7",
     "recompose": "^0.30.0",
     "redux": "^4.0.0",
