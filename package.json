@@ -5,7 +5,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "ramda": "^0.25.0",
-    "react": "^16.5.0",
+    "react": "^16.10.1",
     "react-dom": "^16.5.0",
     "react-redux": "^5.0.7",
     "recompose": "^0.30.0",
